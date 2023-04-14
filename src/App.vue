@@ -1,32 +1,66 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
-  </div>
+  <v-app>
+    <app-toolbar />
+
+    <v-main>
+      <router-view/>
+    </v-main>
+    
+    <v-snackbar
+    :timeout="-1"
+    :value="notification.isSnackbar"
+    :color="notification.color"
+    :light="notification.color == 'success' || notification.color == 'warning'"
+    bottom
+    center
+    rounded="pill"
+  >
+    {{ notification.msg }}
+
+    <template v-slot:action="{ attrs }">
+      <v-btn
+        color="red"
+        small
+        fab
+        dark
+        rounded
+        v-bind="attrs"
+        @click="$store.commit('CLOSE_SNACKBAR', false)"
+        :loading="notification.isLoading"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </template>
+  </v-snackbar>
+
+  <v-footer padless app>
+    <v-col
+      class="text-center"
+      cols="12"
+    >
+      {{ new Date().getFullYear() }} — &copy; <strong>Job<span class="green--text">In</span>Your<span class="green--text">City</span></strong>
+    </v-col>
+  </v-footer>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import AppToolbar from './components/default/AppToolbar.vue';
+import { mapGetters } from 'vuex'
 
-nav {
-  padding: 30px;
+export default {
+  components: { AppToolbar },
+  name: 'App',
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  data: () => ({
+    //
+  }),
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+  computed: {
+		...mapGetters({
+			// map `this.doneCount` to `this.$store.getters.doneTodosCount`
+			notification: 'notification',
+		})
+	}
+};
+</script>
